@@ -1,20 +1,20 @@
 <template>
     <div id="body">
-        <Header id="header"></Header>
-        <Menu id="menu" @menu-selection="menuSelection">Menu area</Menu>
-        <NewsFeed id="newsfeed" headerTitle="Newsfeed">News feed area</NewsFeed>
-        <ContractArea id="contract" headerTitle="Contract">Contract area</ContractArea>
+        <Header id="header"/>
+        <Menu id="menu" @menu-selection="menuSelection"/>
+        <NewsFeed id="newsfeed" headerTitle="Newsfeed"/>
+        <ContractArea id="contract" headerTitle="Contract"/>
         <Footer id="footer"></Footer>
-</div>
+    </div>
 </template>
 
 <script>
-// import HelloWorld from "./components/HelloWorld.vue";
 import Header from './components/Header';
 import Menu from './components/Menu';
 import NewsFeed from './components/NewsFeed';
 import ContractArea from './components/ContractArea';
 import Footer from './components/Footer';
+
 
 export default {
   name: "App",
@@ -29,13 +29,9 @@ export default {
   methods: {
       menuSelection: function(...args) {
         Menu.methods.selectTab(...args);
-
         document.querySelector('#newsfeed').style.visibility = "hidden";
         document.querySelector('#contract').style.visibility = "hidden";
-
         document.querySelector(`#${args[0]}`).style.visibility = 'visible';
-
-        // const elem = document.querySelector('');
       }
   }
 };
@@ -47,6 +43,7 @@ export default {
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 
@@ -107,7 +104,6 @@ div#body {
     grid-column-end: 4;
     
 }
-
 
 
 @media (min-width: 550px) and (max-width: 1000px),

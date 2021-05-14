@@ -1,15 +1,12 @@
 
-@function tint($color, $percentage) {
-    @return mix(white, $color, $percentage);
-}
-
-
 
 :root {
     --container-padding: 15px;
 
     --header-color: #444444;
-    --border-color-grey: var(--on-primary-color);
+    /* --border-color-grey: #aaaaaa5f; */
+    --border-color-grey:var(--on-primary-color);
+    --border-color-black: var(--on-primary-color);
     /* --border-color-grey: #aaaaaa5f; */
     --icon-color: rgb(45, 126, 192);
 
@@ -19,6 +16,7 @@
     --on-bg-color-dark: #ffffff61;
 
 
+    --primary-color-light: #c598fc;
     --primary-color: #bb86fc;
     --primary-color-semi: #bb86fc80;
     --primary-color-dimm: #bb86fc40;
@@ -31,12 +29,13 @@
 
 
     --bg-color: #121212;
+    --bg-color-darker: #050505;
 
     --surface-color: #121212;
     /* --surface-color-2dp: linear-gradient(var(--surface-color), var(--surface-color)), linear-gradient(rgba(#ffffff, 0.05), rgba(#ffffff, 0.05)); */
 
     /* --surface-color-2dp: tint(var(--bg-color), 20%); */
-    --surface-color-2dp: #151515;
+    --surface-color-2dp: #181818;
     /* linear-gradient(var(--surface-color), rgba(#ffffff, 0.05)), */
     /* linear-gradient(white, white); */
 

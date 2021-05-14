@@ -11,8 +11,6 @@
         <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'contract')">
             Contracts
         </div>
-        <!-- <div class="menu-item" @click="$emit('menu-selection', 'c')"></div> -->
-        <!-- <div class="menu-item" @click="$emit('menu-selection', 'd')"></div> -->
     </div>
     <div class="footer">
 
@@ -24,18 +22,16 @@
 
 <script>
 export default {
-  name: 'Menu',
-  methods: {
-      selectTab: function(menu_elem) {
-          const active_elem = document.querySelector('div.menu-item.active');
-          active_elem.classList.remove('active');
-        //   active_elem.style.visibility = 'hidden';
+    name: 'Menu',
+    methods: {
+        selectTab: function(menu_elem) {
+            const active_elem = document.querySelector('div.menu-item.active');
+            active_elem.classList.remove('active');
 
-          const elem = document.querySelector(`div.menu-item.${menu_elem}`);
-          elem.classList.add('active');
-        //   elem.style.visibility = 'visible';
-      }
-  }
+            const elem = document.querySelector(`div.menu-item.${menu_elem}`);
+            elem.classList.add('active');
+        }
+    }
 }
 </script>
 
@@ -74,7 +70,7 @@ div.menu-item {
     width: 100%;
     font-family: 'HeaderFontRegular';
     padding: 20px;
-    color: var(--on-bg-color-medium);
+    color: var(--on-bg-color-light);
     border-left: 4px solid transparent;
 }
 
@@ -85,17 +81,9 @@ div.menu-item:hover {
     cursor: pointer;
 }
 
-/* 
-div.menu-item.active:hover {
-    color: var(--on-bg-color-light);
-    background: var(--primary-color-dimm);
-    border-left: 4px solid var(--primary-color);
-} */
-
 
 div.menu-item.active {
-    /* color: var(--on-bg-color-light); */
-    color: var(--primary-color);
+    color: var(--primary-color-light);
     border-left: 4px solid var(--primary-color);
 }
 

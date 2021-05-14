@@ -23,16 +23,23 @@
                 with additional tools for filtering and searching token contract.
             </p>
             <div id="code-area">
-
+                <!-- <v-ace-editor lang="javascript"> -->
+                    <!-- console.log('hello'); -->
+                <!-- </v-ace-editor> -->
             </div>
         </div>
-
     </div>
 </template>
 
 <script>
+// import { VAceEditor } from 'vue3-ace-editor';
+
 export default {
   name: 'ContractArea',
+  components: {
+    //   VAceEditor
+  },
+
   props: {
     headerTitle: String
   }
@@ -112,7 +119,7 @@ div.enter-token-area .input-area {
 }
 
 div.enter-token-area input {
-    background: var(--on-primary-color);
+    background: var(--bg-color-darker);
     margin-top: 10px;
     padding-left: 10px;
     width: 500px;
@@ -126,6 +133,7 @@ div.enter-token-area input {
 
 div.enter-token-area input:focus {
     border: 1px solid var(--primary-color-semi);
+    box-shadow: 0px 0px 3px 0.2px var(--primary-color);
 }
 
 div.token-detail-area {
@@ -141,7 +149,7 @@ div.token-detail-area p {
 
 
 div#code-area {
-    background: var(--on-primary-color);
+    background: var(--bg-color-darker);
     width: 100%;
     height: 20vh;
     border-radius: 3px;

@@ -1,7 +1,8 @@
-import { createApp } from 'vue'
+import Vue from 'vue'
 import App from './App.vue'
 
-// import '@fontawesome/fontawesome-free/css/all.css'
-// import '@fontawesome/fontawesome-free/js/all.js'
+Vue.config.productionTip = false
 
-createApp(App).mount('#app')
+new Vue({
+  render: function (h) { return h(App) },
+}).$mount('#app')
