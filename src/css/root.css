@@ -1,14 +1,14 @@
 
-
 :root {
     --container-padding: 15px;
 
     --header-color: #444444;
-    /* --border-color-grey: #aaaaaa5f; */
+    --border-color: #aaaaaa5f;
     --border-color-grey:var(--on-primary-color);
     --border-color-black: var(--on-primary-color);
     /* --border-color-grey: #aaaaaa5f; */
     --icon-color: rgb(45, 126, 192);
+
 
 
     --on-bg-color-light: #ffffffde;
@@ -59,7 +59,12 @@
     --on-secondary-color: #000000;
     --error-color: #cf6679;
     --on-error-color: #000000; 
-
-
-
 }
+
+
+
+@font-face {
+    font-family: 'Monaco';
+    src: url('../assets/fonts/Monaco.ttf');
+}
+

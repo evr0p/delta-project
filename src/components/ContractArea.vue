@@ -13,9 +13,7 @@
                 <input id="token-addr" class="token-addr-input"/>
             </div>
         </div>
-        <div class="search-token-button">
-
-        </div>
+        <div class="search-token-button"></div>
 
         <div class="token-detail-area">
             <p>
@@ -23,26 +21,68 @@
                 with additional tools for filtering and searching token contract.
             </p>
             <div id="code-area">
-                <!-- <v-ace-editor lang="javascript"> -->
-                    <!-- console.log('hello'); -->
-                <!-- </v-ace-editor> -->
+                <!-- <code-editor-tools/> -->
+                <pre v-highlightjs style="margin: 0; padding: 0; height: 100%">
+                    <code class="c++">
+                        {{ sourceCode }}
+                    </code>
+                </pre>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-// import { VAceEditor } from 'vue3-ace-editor';
+import CodeEditorTools from './CodeEditorTools';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import axios from 'axios';
 
 export default {
-  name: 'ContractArea',
-  components: {
-    //   VAceEditor
-  },
+    name: 'ContractArea',
+    components: {
+        CodeEditorTools
+    },
+    props: {
+        headerTitle: String,
+        sourceCode: String
+    },
+    /**
+     * 
+     */
+    mounted() {
+        this.fetchNews().then((data) => {
+            let str = data.data.result[0].SourceCode;
+            str = str.replace(/{{/g, '{');
+            str = str.replace(/}}/g, '}');
+            const json = JSON.parse(str);
 
-  props: {
-    headerTitle: String
-  }
+            const key = Object.keys(json.sources)[0];
+            console.log({ 'key': key });
+            console.log(json.sources[key].content);
+
+            this.sourceCode = json.sources[key].content;
+        });
+    },
+
+    data() {
+        return {
+            sourceCode: {}
+        }
+    },
+
+    methods: {
+        async fetchNews() {
+            console.log(createProxyMiddleware);
+
+            const contract = '0x3504de9e61fdff2fc70f5cc8a6d1ee493434c1aa';
+            // const data = fetch(`https://tokensniffer.com/contract/0x3504de9e61fdff2fc70f5cc8a6d1ee493434c1aa`);
+            const BSCSCAN_API = 'PZ6MVCX5M15DMWIN13FG2JYAYZSBAPC1EQ';
+
+            const url = `https://api.bscscan.com/api?module=contract&action=getsourcecode&address=${contract}&apikey=${BSCSCAN_API}`;
+            const data = axios.get(url);
+            return data;
+        },
+    }
 }
 </script>
 
@@ -118,7 +158,9 @@ div.enter-token-area .input-area {
     flex-direction: column;
 }
 
+
 div.enter-token-area input {
+    font-family: 'Monaco';
     background: var(--bg-color-darker);
     margin-top: 10px;
     padding-left: 10px;
@@ -127,7 +169,7 @@ div.enter-token-area input {
     outline: none;
     height: 3.0em;
     border-radius: 3px;
-    border: 1px solid transparent;
+    border: 1px solid var(--border-color);
     box-shadow: none;
 }
 
@@ -148,11 +190,38 @@ div.token-detail-area p {
 }
 
 
-div#code-area {
-    background: var(--bg-color-darker);
+code {
     width: 100%;
-    height: 20vh;
-    border-radius: 3px;
+    background: var(--bg-color-darker);
+    font-size: 0.85em;
+    font-family: 'Monaco';
+    line-height: 1.8em;
+    margin: 0;
+    /* max-width: 100%; */
+    /* max-width: fit-content; */
+    padding: 15px 25px 15px 25px;
 }
+
+div#code-area {
+    display: flex;
+    overflow: scroll;
+    border: 1px solid var(--border-color);
+    background: var();
+    border-radius: 3px;
+    max-width: 850px;
+    max-height: 650px;
+    /* background: var(--bg-color-darker); */
+    /* border: 1px solid var(--border-color); */
+    /* width: 100%; */
+    /* max-height: fit-content; */
+    /* padding: 0; */
+    /* height: 20vh; */
+    /* border-radius: 3px; */
+}
+/* 
+div#code-area pre {
+    margin: 0;
+    height: max-content;
+} */
 
 </style>

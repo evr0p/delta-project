@@ -1,12 +1,14 @@
+
 <template>
     <div id="body">
         <Header id="header"/>
         <Menu id="menu" @menu-selection="menuSelection"/>
-        <NewsFeed id="newsfeed" headerTitle="Newsfeed"/>
-        <ContractArea id="contract" headerTitle="Contract"/>
+        <NewsFeed id="newsfeed" class="menu-element" headerTitle="Newsfeed"/>
+        <ContractArea id="contract" class="menu-element" headerTitle="Contract"/>
         <Footer id="footer"></Footer>
     </div>
 </template>
+
 
 <script>
 import Header from './components/Header';
@@ -29,13 +31,22 @@ export default {
   methods: {
       menuSelection: function(...args) {
         Menu.methods.selectTab(...args);
-        document.querySelector('#newsfeed').style.visibility = "hidden";
-        document.querySelector('#contract').style.visibility = "hidden";
-        document.querySelector(`#${args[0]}`).style.visibility = 'visible';
+
+        const menu_elements = document.querySelectorAll('.menu-element');
+
+        for (const elem of menu_elements) {
+            elem.style.visibility = "hidden";
+        }
+
+        const selected = document.querySelector(`#${args[0]}`);
+        if (selected) {
+            selected.style.visibility = 'visible';
+        }
       }
   }
 };
 </script>
+
 
 <style>
 @import url('./css/fonts.css');
@@ -123,7 +134,6 @@ div#body {
     {
         visibility: hidden;
     }
-
 }
 
 

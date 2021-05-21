@@ -11,6 +11,12 @@
         <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'contract')">
             Contracts
         </div>
+        <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'Tweets')">
+            Tweets
+        </div>
+        <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'About us')">
+            About us
+        </div>
     </div>
     <div class="footer">
 
@@ -19,17 +25,23 @@
 </template>
 
 
-
 <script>
 export default {
     name: 'Menu',
     methods: {
         selectTab: function(menu_elem) {
+
+            console.log(this.$refs);
+
             const active_elem = document.querySelector('div.menu-item.active');
-            active_elem.classList.remove('active');
+            if (active_elem) {
+                active_elem.classList.remove('active');
+            }
 
             const elem = document.querySelector(`div.menu-item.${menu_elem}`);
-            elem.classList.add('active');
+            if (elem) {
+                elem.classList.add('active');
+            }
         }
     }
 }

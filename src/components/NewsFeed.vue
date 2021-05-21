@@ -23,8 +23,9 @@
 
 <script>
 import NewsElement from './NewsElement';
-import axios from 'axios';
 const NEWS_API_KEY = 'wkrathsw40hnwxw6cal9ilmvl1qz6ljm2ffadmmc';
+import axios from 'axios';
+
 
 export default {
     components: {
@@ -48,12 +49,12 @@ export default {
     },
 
     mounted() {
-        this.fetchNews().then((data) => {
-            // console.log(data);
-            // console.log(this.news);
-            console.log(data.data.data);
-            this.news = data.data.data;
-        });
+        // this.fetchNews().then((data) => {
+        //     // console.log(data);
+        //     // console.log(this.news);
+        //     console.log(data.data.data);
+        //     this.news = data.data.data;
+        // });
     },
 
     methods: {

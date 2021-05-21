@@ -1,8 +1,12 @@
-import Vue from 'vue'
-import App from './App.vue'
+import { createApp } from "vue";
+import App from "./App.vue";
 
-Vue.config.productionTip = false
+import VueHighlightJS from 'vue3-highlightjs'
+import 'highlight.js/styles/monokai.css'
+// import 'highlight.js/styles/stackoverflow-dark.css'
+// import 'highlight.js/styles/monokai.css'
+// import 'highlight.js/styles/night-owl.css'
 
-new Vue({
-  render: function (h) { return h(App) },
-}).$mount('#app')
+createApp(App)
+  .use(VueHighlightJS)
+  .mount("#app")
