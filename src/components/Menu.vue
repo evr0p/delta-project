@@ -5,8 +5,8 @@
 
     </div>
     <div class="menu-items-area">
-        <div ref="menu-elem" class="menu-item newsfeed active" @click="$emit('menu-selection', 'newsfeed')">
-            Newsfeed
+        <div ref="menu-elem" class="menu-item connections active" @click="$emit('menu-selection', 'connections')">
+            Verbindungen
         </div>
         <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'contract')">
             Contracts
@@ -18,9 +18,9 @@
             About us
         </div>
     </div>
-    <div class="footer">
+    <!-- <div class="footer">
 
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -63,7 +63,7 @@ export default {
 div.menu-container {
     display: flex;
     flex-direction: column;
-    border-right: 1px solid var(--border-color-grey);
+    /* border-right: 1px solid var(--border-color-grey); */
 }
 
 div.header {
@@ -72,41 +72,47 @@ div.header {
 
 
 div.menu-items-area {
-    flex-direction: column;
+    /* flex-direction: column; */
     display: flex;
+    justify-content: center;
     align-items: center;
 }
 
 
 div.menu-item {
-    width: 100%;
+    width: 200px;
+    height: calc(100% - 2px);
     font-family: 'HeaderFontRegular';
     padding: 20px;
+    text-align: center;
     color: var(--on-bg-color-light);
-    border-left: 4px solid transparent;
+    border-bottom: 1px solid transparent;
 }
 
 div.menu-item:hover {
-    border-left: 4px solid var(--primary-color-dimm);
+    border-bottom: 1px solid var(--secondary-color);
     color: var(--on-bg-color-light);
-    background: var(--primary-color-very-dim);
+    /* background: var(--primary-color-very-dim); */
     cursor: pointer;
 }
 
 
 div.menu-item.active {
     color: var(--primary-color-light);
-    border-left: 4px solid var(--primary-color);
+    /* color: var(--secondary-color-light); */
+    /* border-bottom: 1px solid var(--primary-color); */
+    border-bottom: 1px solid var(--secondary-color-light);
+    transition: all linear 0.2;
 }
 
 
-
+/* 
 div.footer {
     height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
-}
+} */
 
 
 </style>

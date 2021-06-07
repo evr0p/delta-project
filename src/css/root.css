@@ -24,12 +24,19 @@
     --primary-color-very-dim: #bb86fc15;
     --primary-variant-color: #3700b3;
 
-    --secondary-color: #03dac6;
-    --secondary-color-semi: #03dac680;
+
+    
+    --secondary-color: #4a7fdb;
+    --secondary-color-light: #769fe6;
+    --button-color: #3674dd;
+    --secondary-color-semi: #253a5a;
+    --secondary-color-dark: #1b2a40;
 
 
-    --bg-color: #121212;
-    --bg-color-darker: #050505;
+    /* --bg-color: #121212; */
+    --bg-color: #1f1e1e;
+    /* --bg-color-darker: #050505; */
+    --bg-color-darker: #191b1f;
 
     --surface-color: #121212;
     /* --surface-color-2dp: linear-gradient(var(--surface-color), var(--surface-color)), linear-gradient(rgba(#ffffff, 0.05), rgba(#ffffff, 0.05)); */

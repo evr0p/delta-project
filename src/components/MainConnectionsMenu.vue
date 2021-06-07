@@ -1,5 +1,5 @@
 <template>
-    <div class="news-element">
+    <div class="connections-menu">
         <h3>{{ news.title }}</h3>
         <p>{{ news.text }}</p>
         <div class="tickers-container">
@@ -13,7 +13,7 @@
 
 <script>
 export default {
-    name: 'NewsElement',
+    name: 'MainConnectionsMenu',
 
     props: [
       'news'
@@ -31,12 +31,12 @@ export default {
 
 
 <style scoped>
-div.news-element * {
+div.connections-menu * {
   box-sizing: border-box;
 }
 
 
-div.news-element {
+div.connections-menu {
     background: var(--surface-color-2dp);
     box-sizing: border-box;
     margin: 0;

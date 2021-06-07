@@ -33,14 +33,14 @@
 </template>
 
 <script>
-import CodeEditorTools from './CodeEditorTools';
+// import CodeEditorTools from './CodeEditorTools';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import axios from 'axios';
 
 export default {
     name: 'ContractArea',
     components: {
-        CodeEditorTools
+        // CodeEditorTools
     },
     props: {
         headerTitle: String,
