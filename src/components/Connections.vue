@@ -3,29 +3,33 @@
         <div class="connections-body">
             <div class="connections-box">
                 <div class="header">
-                    <div class="header-title">
-                        {{ headerTitle }}
-                        <i style="margin-left: 10px; font-size: 0.7em; color: var(--accent-color)" class="fa fa-chevron-down"/>
-                    </div>
+                    <div class="header-title">{{ headerTitle }}</div>
                     <div class="filter-area">
-                        <div class="filter-button green">Whales</div>
-                        <div class="filter-button green">Launches</div>
+                        <!-- <div class="filter-button green">Whales</div> -->
+                        <!-- <div class="filter-button green">Launches</div> -->
                     </div>
                 </div>
-                <div class="start-destination-box">
+                <div class="input-container">
                     <div class="input-area left">
                         <div class="input-field">
                             <label for="start-input">Abfahrtsort</label>
                             <input id="start-input" class="place-input"/>
-
-
                         </div>
                         <div class="input-field right">
                             <label for="destination-input">Zielort</label>
                             <input id="destination-input" class="place-input"/>                        
                         </div>
                     </div>
-
+                    <div class="input-area secondary-row">
+                        <div class="input-field">
+                            <label for="via-input">Via</label>
+                            <input id="via-input" class="place-input"/>                        
+                        </div>
+                        <div class=" input-field clock-input">
+                            <label for="clock-input">Uhrzeit</label>
+                            <input id="clock-input" class="place-input"/>                        
+                        </div>                        
+                    </div>
                 </div>
                 <!-- <li v-for="(elem, idx) in news" :key="idx" class="">
                     <main-connections-menu :news="elem"/>
@@ -34,6 +38,9 @@
                     <button id="search-button">Suche Verbindungen</button>
                 </div>
             </div>
+            <div id="connection-table-container">
+                <TxTable id="connections-table" startDestinationLocations="St.Gallen - Zurich"></TxTable>
+            </div>
         </div>
     </div>
 </template>
@@ -41,6 +48,8 @@
 
 <script>
 import MainConnectionsMenu from './MainConnectionsMenu';
+import ConnectionsTable from './ConnectionsTable';
+import TxTable from './TxTable.vue';
 const NEWS_API_KEY = 'wkrathsw40hnwxw6cal9ilmvl1qz6ljm2ffadmmc';
 import axios from 'axios';
 
@@ -48,6 +57,8 @@ import axios from 'axios';
 export default {
     components: {
         MainConnectionsMenu,
+        ConnectionsTable,
+        TxTable
     },
     name: 'Connections',
     props: {
@@ -98,6 +109,11 @@ export default {
 }
 
 
+tx-table {
+    height: 200px;
+}
+
+
 div.newsfeed-container {
     overflow: hidden;
     margin: 0;
@@ -114,9 +130,10 @@ div.header {
 div.header-title {
     font-family: 'HeaderFontRegular';
     color: var(--on-bg-color-light);
-    font-size: 1.5em;
+    font-size: 1.2em;
     width: 100%;
-    padding: var(--container-padding);
+    padding: calc(var(--container-padding) - 5px);
+    padding-top: 0;
 }
 
 div.filter-area {
@@ -130,12 +147,22 @@ div.filter-area {
 }
 
 
+div.input-container {
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background: var(--bg-color-lighter);
+    border: 1px solid var(--border-color-darker);
+}
+
+
 
 div.connections-body {
     height: 100%;
     width: 100%;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     box-sizing: border-box;
     overflow-y: scroll;
 }
@@ -144,9 +171,12 @@ div.connections-body {
 div.connections-box {
     display: flex;
     flex-direction: column;
-    margin-top: 50px;
-    width: 90%;
-    height: 50%;
+    margin-top: 55px;
+    width: 40%;
+    min-width: 500px;
+    max-width: 600px;
+    /* height: 50%; */
+    height: max-content;
     padding: 10px;
     background: rgb(25, 27, 31);
     box-shadow: rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px;
@@ -154,13 +184,12 @@ div.connections-box {
     /* margin-top: 1rem; */
 }
 
-
 div.input-field {
     display: flex;
     flex-direction: column;
     width: 50%;
     align-content: center;
-    padding: 0 20px 0 20px;
+    padding: 0 10px 0 10px;
 }
 
 
@@ -169,9 +198,11 @@ div.input-area {
     align-items: center;
     justify-content: center;
     height: 100px;
-
     /* flex-direction: column; */
     width: 100%;
+    /* padding: 10px; */
+    /* padding-bottom: 5px; */
+    padding: 0px 5px 0px 5px;
     /* background: green; */
 }
 /* 
@@ -183,6 +214,7 @@ div.left, div.right {
  */
 
 label {
+    font-size: 0.9em;
     color: var(--on-bg-color-medium);
 }
 
@@ -195,9 +227,11 @@ input {
     color: var(--on-bg-color-light);
     outline: none;
     height: 3.0em;
-    border-radius: 3px;
-    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    border: 1px solid var(--border-color-medium);
     box-shadow: none;
+    /* background: var(--bg-color); */
+    background: var(--bg-color-darker);
 }
 
 input:focus {
@@ -217,7 +251,8 @@ div.token-detail-area {
     margin-top: auto;
     display: flex;
     justify-content: center;
-    padding-bottom: 40px;
+    padding-bottom: 0px;
+    padding: 13px 0 0 0;
     /* margin-top: auto; */
     /* margin-bottom: 0; */    
     /* bottom: 0; */
@@ -225,19 +260,31 @@ div.token-detail-area {
 }
 
 button#search-button {
-    background: var(--secondary-color-semi);
+    /* background: var(--secondary-color-semi); */
+    /* color: var(--on-bg-color-medium); */
+    background: var(--secondary-color);
+    color: white;
     outline: none;
     border: none;
-    font-size: 1.2em;
+    font-size: 1.1em;
     box-shadow: none;
-    height: 60px;
-    border-radius: 15px;
-    color: var(--on-bg-color-light);
-    width: 50%;
+    height: 50px;
+    border-radius: 16px;
+    width: 100%;
     /* margin-left: auto; */
     /* margin-right: auto; */
     /* font-weight: bold; */
 
+}
+
+input#clock-input {
+    width: 100px;
+}
+
+div.secondary-row {
+    justify-content: flex-start;
+    margin-top: -15px;
+    margin-bottom: 10px;
 }
 
 div.filter-button {
@@ -255,4 +302,13 @@ div.filter-button:hover {
     background-color: rgba(30, 202, 184, 0.15) !important;
     color: #1ecab8 !important;
 }
+
+
+#connection-table-container {
+    width: 80%;
+    height: 200px;
+}
+
+
+
 </style>

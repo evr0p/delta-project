@@ -4,11 +4,15 @@
 
     --header-color: #444444;
     --border-color: #aaaaaa5f;
+    --border-medium: #6464645f;
+    --border-color-darker: #4b4b4b5f;
     --border-color-grey:var(--on-primary-color);
     --border-color-black: var(--on-primary-color);
     /* --border-color-grey: #aaaaaa5f; */
     --icon-color: rgb(45, 126, 192);
 
+
+    --bg-color-new: rgb(25, 27, 31);
 
 
     --on-bg-color-light: #ffffffde;
@@ -35,6 +39,7 @@
 
     /* --bg-color: #121212; */
     --bg-color: #1f1e1e;
+    --bg-color-lighter: #222429;
     /* --bg-color-darker: #050505; */
     --bg-color-darker: #191b1f;
 

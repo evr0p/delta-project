@@ -81,16 +81,16 @@ div.menu-items-area {
 
 div.menu-item {
     width: 200px;
-    height: calc(100% - 2px);
+    height: calc(100% - 2.5px);
     font-family: 'HeaderFontRegular';
     padding: 20px;
     text-align: center;
-    color: var(--on-bg-color-light);
-    border-bottom: 1px solid transparent;
+    color: var(--on-bg-color-medium);
+    border-bottom: 1.5px solid transparent;
 }
 
 div.menu-item:hover {
-    border-bottom: 1px solid var(--secondary-color);
+    border-bottom: 1.5px solid var(--secondary-color);
     color: var(--on-bg-color-light);
     /* background: var(--primary-color-very-dim); */
     cursor: pointer;
@@ -99,9 +99,11 @@ div.menu-item:hover {
 
 div.menu-item.active {
     color: var(--primary-color-light);
+    color: white;
+    font-weight: bold;
     /* color: var(--secondary-color-light); */
     /* border-bottom: 1px solid var(--primary-color); */
-    border-bottom: 1px solid var(--secondary-color-light);
+    border-bottom: 1.5px solid var(--secondary-color-light);
     transition: all linear 0.2;
 }
 

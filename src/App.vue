@@ -5,8 +5,8 @@
         <!-- <Header id="header"/> -->
         <Menu id="menu" @menu-selection="menuSelection"/>
         <Connections id="connections" class="menu-element" headerTitle="Verbindung suchen"/>
-        <ContractArea id="contract" class="menu-element" headerTitle="Contract"/>
-        <Footer id="footer"></Footer>
+        <!-- <ContractArea id="contract" class="menu-element" headerTitle="Contract"/> -->
+        <!-- <Footer id="footer"></Footer> -->
     </div>
 </template>
 
@@ -103,13 +103,15 @@ div#body {
     top: 0px;
     left: 0;
     right: 0;
-    /* bottom: 0; */
+    bottom: 0;
     /* height: 90%; */
     /* width: 100%; */
     /* width: 100vw; */
     /* height: 100%; */
     /* overflow: hidden; */
-    grid-template-columns: minmax(100px, 150px) 1fr 1fr;
+    /* grid-template-columns: minmax(100px, 150px) 1fr 1fr;
+    grid-template-rows: 60px 1fr 100px; */
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: 60px 1fr 100px;
 }
 
@@ -120,7 +122,7 @@ div#body {
     grid-row-start: 1;
     grid-row-end: 2;
     grid-column-start: 1;
-    grid-column-end: 4;
+    grid-column-end: 3;
 }
 /* 
 #header {
