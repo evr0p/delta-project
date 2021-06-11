@@ -4,7 +4,16 @@
     <div id="body">
         <!-- <Header id="header"/> -->
         <Menu id="menu" @menu-selection="menuSelection"/>
-        <Connections id="connections" class="menu-element" headerTitle="Verbindung suchen"/>
+        <Connections id="connections"
+                     @connection-selection="selectConnectionForPayment"
+                     class="menu-element"
+                     headerTitle="Verbindung suchen"/>
+
+        <PaymentMenu id="payment"
+                     @return-to-connections="goBackToConnections"
+                     headerTitle="Angaben zum Ticket"
+                     :connection="selectedConnection"/>
+
         <!-- <ContractArea id="contract" class="menu-element" headerTitle="Contract"/> -->
         <!-- <Footer id="footer"></Footer> -->
     </div>
@@ -17,6 +26,7 @@ import Menu from './components/Menu';
 import Connections from './components/Connections';
 import ContractArea from './components/ContractArea';
 import Footer from './components/Footer';
+import PaymentMenu from './components/PaymentMenu';
 
 
 export default {
@@ -26,8 +36,16 @@ export default {
     Menu,
     Connections,
     ContractArea,
-    Footer
+    Footer,
+    PaymentMenu
   },
+
+
+    data() {
+        return {
+            selectedConnection: {}
+        }
+    },
 
   methods: {
       menuSelection: function(...args) {
@@ -44,7 +62,26 @@ export default {
         if (selected) {
             selected.style.visibility = 'visible';
         }
-      }
+      },
+
+    selectConnectionForPayment(connection) {
+        console.log({RECEIVED_PAYMENT_EVENT: connection});
+        const connections_view = document.querySelector('#connections');
+        connections_view.style.visibility = 'hidden';
+
+        const payment_view = document.querySelector('#payment');
+        payment_view.style.visibility = 'visible';
+        this.selectedConnection = connection;
+        console.log({this: this});
+    },
+
+    goBackToConnections() {
+        const connections_view = document.querySelector('#connections');
+        connections_view.style.visibility = 'visible';
+
+        const payment_view = document.querySelector('#payment');
+        payment_view.style.visibility = 'hidden';
+    }
   }
 };
 </script>
@@ -141,9 +178,9 @@ div#body {
 }
 
 
-#contract {
+#payment {
     visibility: hidden;
-    grid-column-start: 2;
+    grid-column-start: 1;
     grid-column-end: 3;
     grid-row-start: 2;
     grid-row-end: 3;

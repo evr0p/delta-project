@@ -1,24 +1,24 @@
 <template>
-    <div class="table-container">
-        <div id="connection-title">{{startDestinationLocations}}</div>
+    <div class="no-connections-found" v-if="typeof connections === 'undefined' || !connections.length"></div>
+    <div class="table-container" v-else>
+        <!-- <caption id="connection-title" v-if="typeof exactTitle == 'undefined' || !exactTitle.length">{{`${startPlace} - ${destinationPlace}`}}</caption> -->
+        <!-- <caption id="connection-title" v-else>{{`${exactTitle}`}}</caption> -->
+        <h1 id="connection-title">{{exactTitle}}</h1>
         <table id="tx-table">
             <thead>
                 <tr>
                     <th></th>
-                    <th></th>
-                    <th></th>
-                    <th>Abfahrt</th>
-                    <th>Ankunft</th>
+                    <th style="text-align: left !important">Linie</th>
+                    <th style="text-align: left !important">Abfahrt</th>
                     <th>Dauer</th>
                     <th>Umsteigen</th>
                     <th>Gleis</th>
-                    <th>a</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(connection, index) in connections" :key="index"
-                    v-bind:class="{ odd: index % 2 }"
-                >
+                <tr v-for="(connection, index) in connections" :key="connection.id"
+                    v-bind:class="{ odd: index % 2 }">
                     <td class="pictogram-container">
                         <div class="svg-container">
                             <svg viewBox="0 0 20 20" preserveAspectRatio="xMidYMid meet">
@@ -26,16 +26,30 @@
                                 <path :d="connection.typeSvgData.additional"></path>
                             </svg>
                         </div>
-                        <div>{{connection.operator}}</div>
+                        <!-- <div class="connection-operator">{{connection.operator}}</div> -->
                     </td>
-                    <td><div class="td line">{{connection.line}}</div></td>
-                    <td><div class="td train-operator">{{connection.operator}}</div></td>
-                    <td><div class="td departure-time">{{connection.departureTime}}</div></td>
-                    <td><div class="td arrival-time">{{connection.arrivalTime}}</div></td>
+
+                    <td class="td-line"><div>{{connection.line}}</div></td>
+                  
+                    <td class="departure-arrival-cell">
+                        {{connection.departureTime}}
+                        <!-- <div class="departure-arrival-container">
+                            <div class="td departure-time">{{connection.departureTime}}</div>
+                            <div class="departure-dot"></div>
+                            <div class="departure-arrival-line"></div>
+                            <div class="arrival-dot"></div>
+                            <div class="td arrival-time">{{connection.arrivalTime}}</div>
+                        </div> -->
+                    </td>
+                    <!-- <td><div class="td arrival-time">{{connection.arrivalTime}}</div></td> -->
                     <td><div class="td duration">{{connection.duration}}</div></td>
                     <td><div class="td hops">{{connection.hops}}</div></td>
-                    <td><div class="td track">{{connection.track}}</div></td>
-                    <td><div class="td price">{{connection.price}}</div></td>
+                    <td v-if="true"><div class="td track">{{connection.track}}</div></td>
+                    <td class="td-price">
+                        <div class="td price" @click="$emit('connection-selection', emitSelected(connection))">
+                            <span style="white-space: nowrap">{{connection.price}}</span>
+                        </div>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -44,139 +58,39 @@
 
 
 <script>
+const moment = require('moment');
 // import * as utils from "../tx.js";
 import axios from 'axios';
+import uniqueId from 'lodash.uniqueid';
 /**
  * 
  */
 export default {
     name: 'TxTable',
     props: {
-        headerTitle: String
+        startDestinationLocations: String,
+        startPlace: String,
+        destinationPlace: String,
+        exactTitle: String,
+        connections: Array
     },
 
     data() {
-        return {
-            connections: []
-        }
+        // return {
+        //     connections: [],
+        //     connectionsTitle: 'x'
+        // }
     },
 
     mounted() {
-        // const data = await this.fetchData();
-        // console.log(`was created...elements: ${data.txs.length}`);
-        // console.log(data.txs);
-        // for (const tx of  data.txs) {
-        //     this.props.push();
-
-        // }
-
-        this.fetchData().then((data) => {
-            this.connections = this.formatConnectionsData(data.data.connections);
-            console.log(this.connections);
-
-            // this.txs = data.txs;
-        });
-        // this.data = {
-            // txs: data.txs
-        // };
-            // txs: data.txs
-        // };
-
     },
 
-    props: {
-        startDestinationLocations: String
-    },
 
     methods: {
-        async fetchData() {
-
-            const data = await axios({
-                method: 'get',
-                // url: 'https://timetable.search.ch/api/route.json?from=Einsiedeln&to=Z%C3%BCrich,+F%C3%B6rrlibuckstr.+60',
-                // url: 'https://fahrplan.search.ch/api/route.de.json?from=Einsiedeln&to=Z%C3%BCrich,+F%C3%B6rrlibuckstr.+60',
-                url: 'https://fahrplan.search.ch/api/route.de.json?from=Bern&to=St.Gallen',
-                // url: 'http://transport.opendata.ch/v1/connections?from=Lausanne&to=Genève',
-                responseType: 'json'
-            });
-            // .then(function (response) {
-            //     return response;
-            //     // response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
-            // });
-
-            return data;
-            // let txs;
-            // const 
-            // const txFetcher = new utils.ApiTxFetch();
-
-            // try {
-            //     await txFetcher.initTxs();
-            // } catch (e) {
-            //     console.log(e);
-            // }
-
-            // return txFetcher;
-        },
-
-        /**
-         * 
-         */
-        formatConnectionsData(data) {
-            const formated = [];
-            for (let row of data) {
-                formated.push({
-                    line: row.legs[0].line,
-                    trainType: row.legs[0].type_name,
-                    operator: row.legs[0].operator,
-                    departureTime: row.departure,
-                    arrivalTime: row.arrival,
-                    duration: row.duration,
-                    hops: row.legs.length - 1,
-                    track: row.legs[0].track,
-                    price: 234.34,
-                    typeSvgData: this.busSvgData(),
-                });
-            }
-
-            return formated;
-        },
-
-
-        trainSvgData() {
-            return {
-                data: `M17.3 15.7c.2 0 .3-.1.3-.3l-.3-1.9h-3.2v2.2h3.2zm-6.7-9.5L12.3
-                        5 10 3.7 7.7 5l1.8 1.2h1.1zm3.3 3.3c0 .2.1.3.3.3h1.6c.2 0
-                        .3-.1.3-.3l-.3-2.4c0-.2-.2-.3-.3-.3h-1.3c-.2 0-.3.1-.3.3v2.4zM9.7
-                        6.8H2.5v-.6h5.9L6.5 5 10 3l3.5 2-1.9 1.2h3.8c.5 0 .9.3.9.8l.8
-                        5.9H2.5V9.8h7.2c.2 0 .3-.1.3-.3 0-.2-.1-.3-.3-.3H2.5v-.6h7.2c.2
-                        0 .3-.1.3-.3S9.9 8 9.7 8H2.5v-.6h7.2c.2 0 .3-.1.3-.3 0-.1-.1-.3-.3-.3zM6.5 
-                        15c0-.9.7-1.6 1.6-1.6s1.6.7 1.6 1.6-.7 1.6-1.6 1.6c-.9 0-1.6-.7-1.6-1.6m3.7 
-                        0c0-.9.7-1.6 1.6-1.6s1.6.7 1.6 1.6-.7 1.6-1.6 1.6-1.6-.7-1.6-1.6M2.5 
-                        2.8h15v-.3h-15v.3zm0 14.7h15v-.6h-15v.6zm0-3.9l3.4-.1v2.2H2.5v-2.1z`
-            };
-        },
-
-        busSvgData() {
-            return {
-                data: `M4.2 9c0 .2.1.3.3.3h3.8c.2 0 .3-.1.3-.3V5.3c0-.2-.1-.3-.3-.3H4.6c-.2 
-                       0-.4.1-.4.3V9zm5.1 1.2c0 .3.2.5.5.5s.5-.2.5-.5V5.4c0-.3-.2-.5-.5-.5s-.5.2-.5.5v4.8zm1.6 0c0 
-                       .3.2.5.5.5s.5-.2.5-.5V5.4c0-.3-.2-.5-.5-.5s-.5.2-.5.5v4.8zm1.6.1c0 
-                       .2.1.3.3.3h1.7c.2 0 .3-.1.3-.3v-.1l-1.3-4.9c0-.2-.2-.4-.5-.4s-.5.2-.5.5v4.9zM3.3 5H.5v-.7h12.6c.5 
-                       0 1 .3 1.1.8l1.3 5v3.5c0 .3-.2.5-.5.5H9.2c-.3 0-.5-.2-.5-.5v-.1c0-1.6-1.3-2.9-2.9-2.9-1.6 0-2.9 1.3-2.9 2.9v.1c0 
-                       .3-.2.5-.5.5H.5V9.4h2.8c.2 0 .3-.1.3-.3V5.3c0-.2-.1-.3-.3-.3z`,
-                additional: `M5.8 14.7c.7 0 1.2-.6 1.2-1.2s-.5-1.3-1.2-1.3-1.3.6-1.3 1.3c0 
-                             .7.6 1.2 1.3 1.2m0-3.4c1.2 0 2.2 1 2.2 2.2s-1 2.2-2.2 2.2c-1.2 
-                             0-2.2-1-2.2-2.2s1-2.2 2.2-2.2`
-            }
-        },
-
-        formatDateTime(dt) {
-            return;
-        },
-
-
-        blockNumber() {
-            return  
+        emitSelected(connection) {
+            console.log(connection);
+            connection.description = this.exactTitle;
+            return connection;
         }
     },
 }
@@ -186,65 +100,56 @@ export default {
 <style scoped>
 
 
-div.pictogram-container {
-    display: flex;
-}
-
-div.svg-conatiner {
+div.no-connections-found {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 25px;
-    width: 20px;
-    text-align: center;
-    border-radius: 5px;
-
 }
 
-svg {
-    height: 25px;
-    width: 25px;
-    border-radius: 5px;
-    background: #27348b;
-    fill: white;
+
+.connection-operator {
+    font-size: 0.8em;
+    margin-left: 20px;
 }
 
 
 .table-container {
-    margin-top: 0px;
-    /* height: 50vh; */
+    /* margin-top: 0px; */
+    height: 50vh;
     overflow: auto;
     display: flex;
+    height: fit-content;
     /* max-width: 900px; */
     flex-direction: column;
     align-items: center;
 }
 
 
-div#connection-title {
-    padding: 25px;
-    margin: 25px 0 50px 0;
+#connection-title {
+    padding: 10px;
+    margin: 40px 0 30px 0;
     text-align: center;
-    height: 30px;
-    width: 50%;
-    font-size: 1.6em;
+    font-size: 1.5em;
     color: var(--on-bg-color-light);
 }
 
 
 table#tx-table {
-      transform: scale(1);
-  -webkit-transform: scale(1);
-  -moz-transform: scale(1);
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
     position: relative;
     /* display: inline-block; */
     border-spacing: 0;
     border-collapse: separate !important;
     /* padding: 30px; */
-    border-radius: 5px;
+    border-radius: 20px;
     width: 100%;
+    min-width: 750px;
     height: 100%;
     box-shadow: rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px;
+    table-layout: fixed;
+    /* width: 500px; */
 }
 
 
@@ -255,6 +160,7 @@ tbody {
 
 
 table#tx-table th {
+    border-radius: 20px;
     position: sticky;
     top: 0;
     /* background: black; */
@@ -273,18 +179,10 @@ table#tx-table tr {
     border-radius: 10px;
 }
 
-table#tx-table td {
-    padding: 8px;
-    /* display: flex; */
-    /* align-items: center; */
-    /* justify-content: center; */
-}
-
 
 
 table#tx-table tr.odd {
     background: var(--bg-color-lighter);
-
 }
 
 h1 {
@@ -293,14 +191,156 @@ h1 {
 }
 
 
-th {
-    /* background: transparent; */
-}
-
 
 thead > tr  {
     color: var(--on-bg-color-medium);
     background: transparent !important;
+}
+
+
+
+table tr:last-child td:first-child {
+    border-bottom-left-radius: 10px;
+}
+
+table tr:last-child td:last-child {
+    border-bottom-right-radius: 10px;
+}
+
+
+td.pictogram {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+td.pictogram-container {
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    padding-left: 40px;
+    /* width: 100px !important; */
+}
+
+
+svg {
+    height: 28px;
+    width: 28px;
+    border-radius: 5px;
+    background: #27348b;
+    fill: white;
+}
+
+
+.svg-container {
+    display: flex;
+    justify-content: center;
+}
+
+
+td, th {
+    text-align: center !important; 
+    vertical-align: middle  !important;
+    padding: 8px;
+}
+
+
+
+td.td-line {
+    text-align: left !important;           
+}
+
+div.departure-arrival-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+
+td.departure-arrival-cell {
+    width: max-content;
+    text-align: left !important;
+    max-width: 100px;
+}
+
+div.departure-arrival-line {
+    width: 200px;
+    /* width: 70%; */
+    height: 2px;
+    background: green;
+    padding: 0;
+    margin: 0 0px 0 0px;
+}
+
+div.departure-dot {
+    width: 6px;
+    max-width: 6px;
+    min-width: 6px;
+    height: 6px;
+    min-height: 6px;
+    max-height: 6px;
+    border-radius: 50%;
+    background: green;
+    margin-left: 15px;
+    margin-right: -1px
+}
+
+div.arrival-dot {
+    width: 6px;
+    max-width: 6px;
+    min-width: 6px;
+    height: 6px;
+    min-height: 6px;
+    max-height: 6px;
+    border-radius: 50%;
+    background: green;
+    margin-right: 15px;
+    margin-left: -1px
+}
+
+
+
+td.td-price {
+    /* text-align: right !important;  */
+    /* vertical-align: right  !important; */
+    /* padding: 8px; */
+    /* width: 100px; */
+    /* display: flex; */
+    /* justify-content: flex-end; */
+    /* align-items: center; */
+    /* display: flex; */
+}
+
+.price {
+    font-size: 0.9em;
+    background: red;
+    color: white;
+    /* width: 50px; */
+    width: fit-content;
+    border-radius: 3px;
+    padding: 4px 10px 4px 10px;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-left: auto;
+}
+
+
+tr {
+    height: auto;
+}
+
+td {
+    height: 100%;
+}
+
+
+input[type="time"]::-webkit-calendar-picker-indicator{
+  filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(130deg) brightness(95%) contrast(80%);
 }
 
 </style>

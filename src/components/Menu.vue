@@ -9,14 +9,14 @@
             Verbindungen
         </div>
         <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'contract')">
-            Contracts
+            meine Fahrten
         </div>
         <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'Tweets')">
-            Tweets
+            Konto
         </div>
-        <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'About us')">
+        <!-- <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'About us')">
             About us
-        </div>
+        </div> -->
     </div>
     <!-- <div class="footer">
 
