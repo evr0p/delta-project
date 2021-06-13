@@ -7,5 +7,9 @@ import App from "./App.vue";
 // import 'highlight.js/styles/monokai.css'
 // import 'highlight.js/styles/night-owl.css'
 
+
 createApp(App)
+  // .component("font-awesome-icon", FontAwesomeIcon)
+  // .use(BootstrapVue)
+  // .use(BootstrapVueIcons)
   .mount("#app")

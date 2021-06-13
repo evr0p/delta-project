@@ -5,8 +5,6 @@
                 <div class="header">
                     <div class="header-title">{{ headerTitle }}</div>
                     <div class="filter-area">
-                        <!-- <div class="filter-button green">Whales</div> -->
-                        <!-- <div class="filter-button green">Launches</div> -->
                     </div>
                 </div>
                 <form>
@@ -29,10 +27,14 @@
                             <label for="via-input">via</label>
                             <input id="via-input" class="place-input" placeholder="--" v-model="form.viaPlace"/>
                         </div>
+                        <div class=" input-field date-input">
+                            <label for="date-input">Abfahrtsdatum</label>
+                            <input type="date" id="date-input" class="place-input" v-model="form.date" required/>    
+                        </div>
                         <div class=" input-field clock-input">
                             <label for="clock-input">Uhrzeit</label>
                             <input type="time" id="clock-input" class="place-input" v-model="form.time" required/>    
-                        </div>                        
+                        </div>
                     </div>
                 </div>
                 </form>
@@ -84,13 +86,18 @@ export default {
                 destinationPlace: '',
                 viaPlace: '',
                 time: '',
+                date: ''
             },
 
             connections: []
         }
     },
 
-    mounted() {},
+    mounted() {
+        let date = new Date();
+        this.form.date = moment(String(date)).format('YYYY-MM-DD');
+        this.form.time = moment(String(date)).format('HH:mm');
+    },
 
     methods: {
         receivePaymentEvent(connectionData) {
@@ -124,14 +131,12 @@ export default {
         async fetchData() {
             console.log("FETCHING API DATA...");
 
-            let url = `https://fahrplan.search.ch/api/route.de.json?from=${this.form.departurePlace}&to=${this.form.destinationPlace}&transportation_types=train`;
+            let url = `https://fahrplan.search.ch/api/route.de.json?from=${this.form.departurePlace}&to=${this.form.destinationPlace}&transportation_types=train&num=6`;
+            url = `${url}&time=${this.form.time}`;
+            url = `${url}&date=${this.form.date}`;
 
             if (this.form.viaPlace.length) {
                 url = `${url}&via=${this.form.viaPlace}`;
-            }
-
-            if (this.form.time.length) {
-                url = `${url}&time=${this.form.time}`
             }
 
             const data = await axios({
@@ -171,6 +176,8 @@ export default {
                     trainType: row.legs[0].type_name,
                     operator: row.legs[0].operator,
                     departureTime: moment(row.departure).format('HH:mm'),
+                    departureDateTime: moment(row.departure).format('YYYY-MM-DD HH:mm'),
+                    arrivalDateTime: moment(row.arrival).format('YYYY-MM-DD HH:mm'),
                     arrivalTime: moment(row.arrival).format('HH:mm'),
                     duration: this.secondsToHours(row.duration),
                     hops: row.legs.length - 1,
@@ -267,6 +274,18 @@ export default {
 @import url('../css/fonts.css');
 @import url('../css/root.css');
 
+/* .date-input, .clock-input {
+    justify-content: flex-end;
+    margin-right: 0;
+    margin-left: auto;
+} */
+
+
+::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+
 .newsfeed-container * {
     box-sizing: border-box;
     font-family: 'HeaderFontRegular';
@@ -345,7 +364,7 @@ div.connections-box {
     margin-top: 55px;
     width: 40%;
     min-width: 600px;
-    max-width: 700px;
+    max-width: 600px;
     /* height: 50%; */
     height: max-content;
     padding: 8px;
@@ -353,6 +372,7 @@ div.connections-box {
     box-shadow: rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px;
     border-radius: 24px;
     /* margin-top: 1rem; */
+    /* transition: all linear 100ms; */
 }
 
 div.input-field {

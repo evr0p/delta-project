@@ -1,5 +1,5 @@
 <template>
-<div class="container">
+<div id="payment-view" class="container">
     <div class="connections-box">
         <div class="header">
             <div class="header-title">{{ headerTitle }}</div>
@@ -11,40 +11,76 @@
             <div class="input-area left">
                 <div class="input-field">
                     <label for="name">Name</label>
-                    <input id="name" class="place-input" v-model="form.name" lazy/>
+                    <input id="name" class="place-input" v-model="form.name" lazy @keypress="inputKeypress"/>
                 </div>
                 <div class="input-field right">
                     <label for="surname">Nachname</label>
-                    <input id="surname" class="place-input" v-model="form.surname" lazy/>
+                    <input id="surname" class="place-input" v-model="form.surname" lazy @keypress="inputKeypress"/>
                 </div>
             </div>
             <div class="input-area secondary-row">
                 <div class="input-field">
                     <label for="birthday-date">Geburtsdatum</label>
-                    <input id="birthday-date" type="date" class="place-input" v-model="form.birthday"/>
+                    <input id="birthday-date" type="date" class="place-input" v-model="form.birthday" @click="inputKeypress"/>
                 </div>
                 <div class=" input-field clock-input">
                     <label for="discount-type">Ermässigungen</label>
-                    <select id="discount-type" class="place-input">
-                        <option v-for="(option, index) in discountOptions"
+                    <select id="discount-type" class="place-input" v-model="form.discountOption" @change="calculateTicketPrice">
+                        <option value="none" selected>Keine Ermässigungen</option>
+                        <option value="halbtax">Halbtax</option>
+                        <!-- <option value="second_class">2. Klasse</option> -->
+
+                        <!-- <option v-for="(option, index) in discountOptions"
                             :key="index"
                             :selected="index == 0"
                             :value="option.value">
                             {{option.name}}
-                        </option>
+                        </option> -->
                     </select>
-                </div>                        
+                </div>
+            </div>
+            <div class="input-area tertiary-row">
+                <!-- <div class="button class-button"></div> -->
+                <div class="class-type-div">
+                    <label for="discount-type">Reiseoption</label>
+                    <select class="class-input" @click="inputKeypress" v-model="form.classType" @change="calculateTicketPrice">
+                        <option value="none" disabled selected>Bitte Reiseklasse wählen</option>
+                        <option value="second_class">2. Klasse</option>
+                        <option value="first_class">1. Klasse</option>
+                    </select>
+                </div>
+
+                <div class="one-two-way" @click="oneTwoWayButton(); calculateTicketPrice()">
+                    <div v-if="!form.twoWay" class="two-way-button">{{buttonTwoWayText[0]}}</div>
+                    <div v-else class="two-way-button">{{buttonTwoWayText[1]}}</div>
+                </div>
+
+                <div v-if="form.twoWay" class="return-connection">
+                    <div class="input-field">
+                        <label for="return-date">Rückfahrdatum</label>
+                        <input type="date" id="return-date" class="return-date" v-model="form.returnDate" @keypress="inputKeypress" @click="inputKeypress"/>
+                    </div>
+                    <div class=" input-field clock-input">
+                        <label for="clock-input">Uhrzeit</label>
+                        <input type="time" id="return-time" class="return-time place-input" v-model="form.returnTime" required @keypress="inputKeypress" @click="inputKeypress"/>
+                    </div>
+                </div>
+                <!-- </div> -->
+                <!-- <div class="class-button"></div> -->
             </div>
         </div>
-        <div class="search-button-area" @click="a">
-            <button class="search-button"></button>
+        <div class="search-button-area" @click="goToPayment">
+            <button class="search-button">Zur Kasse</button>
         </div>
     </div>
     <div class="ticket-info-box">
         <div class="info-title">{{connection.from}} - {{connection.to}}</div>
         <div class="info-route">{{connection.description}}</div>
+        <!-- <div class="return-route" v-if="form.twoWay">Rückfahrt am {{returnDateTime}}</div> -->
         <div class="info-hops">Umsteigen {{connection.hops}}</div>
-        <div class="info-discount" v-if="form.discountOption != 'no_discount'">{{discountOptions[1].name}}</div>
+        <div class="info-discount" v-if="form.discountOption != 'none'">{{discountOptions[1].name}}</div>
+        <div class="info-class" v-if="form.classType != 'none'">{{classOptionNames[form.classType]}}</div>
+        <div class="info-price">{{calcTicketPrice}} CHF</div>
     </div>
 </div>
 </template>
@@ -55,6 +91,7 @@ const moment = require('moment');
 // import * as utils from "../tx.js";
 import axios from 'axios';
 import uniqueId from 'lodash.uniqueid';
+
 /**
  * 
  */
@@ -78,13 +115,37 @@ export default {
                 name: '',
                 surname: '',
                 birthday: '',
-                discountOption: '',
+                discountOption: 'none',
+                twoWay: false,
+                returnTime: '',
+                returnDate: '',
+                classType: 'none'
             },
+
+            returnDateTime: '',
+            ticketPrice: 214.15,
+            calcTicketPrice: 214.15,
 
             discountOptions: [
                 {name: 'keine Ermässigungen', value: 'no_discount'},
                 {name: 'Halbtax', value: 'halbtax'}
             ],
+
+            buttonTwoWayText: [
+                'Rückfahrt hinzufügen +',
+                'Rückfahrt entfernen -'
+            ],
+
+            classOptions: [
+                {name: 'Bitte Klasse wählen', value: 'none'},
+                {name: '1. Klasse + 15.5 CHF', value: 'first_class'},
+                {name: '2. Klasse', value: 'second_class'}
+            ],
+
+            classOptionNames: {
+                first_class: '1. Klasse',
+                second_class: '2. Klasse',
+            }
         }
     },
 
@@ -94,6 +155,155 @@ export default {
 
     methods: {
 
+        async goToPayment(input) {
+            console.log({formData: this.form});
+            if (this.validateInput()) {
+                // this.fetchData();
+            }
+        },
+
+
+
+        calculateTicketPrice() {
+            let price = this.ticketPrice;
+
+            if (this.form.classType == 'first_class') {
+                console.log("FIRST CLASSSSSSSSSSSSSSS");
+                price += 15.5;
+            }
+
+            if (this.form.discountOption == 'halbtax') {
+                console.log('less EXPENSIVE');
+                price -= this.ticketPrice / 2;
+            }
+
+            if (this.form.twoWay) {
+                price *= 2;
+            }
+
+            this.calcTicketPrice = price;
+        },
+
+
+        changeDiscount() {
+            console.log({dicountType: this.form.discountOption});
+            if (this.form.discountOption == 'halbtax') {
+                console.log('less EXPENSIVE');
+                this.calcTicketPrice -= this.ticketPrice / 2;
+            } else {
+                console.log('more EXPENSIVE');
+                this.calcTicketPrice += this.ticketPrice / 2;
+            }
+        },
+
+        inputKeypress(event) {
+            console.log(event.target.id);
+
+            if (event.target.id == 'return-time' || event.target.id == 'return-date') {
+                let time = document.querySelector('#return-time');
+                let date = document.querySelector('#return-date');
+
+                time.classList.remove('error-input');
+                date.classList.remove('error-input');
+            }
+            // con
+            // const input = document.querySelector(`#${event.target.id}`);
+            // input.classList.remove('error-input');
+
+            event.target.classList.remove('error-input');
+        },
+
+
+        validateInput() {
+            let valid = true;
+            if (!this.form.name.length) {
+                this.markInputError('#name');
+                valid = false;
+            }
+
+            if (!this.form.surname.length) {
+                this.markInputError('#surname');
+                valid = false;
+            }
+
+            if (!this.form.birthday.length || this.form.birthday == '') {
+                this.markInputError('#birthday-date');
+                valid = false;
+            } else {
+                if (moment(this.form.birthday).isAfter('2020-01-01', 'day')) {
+                    this.markInputError('#birthday-date');
+                    valid = false;                    
+                }
+            }
+
+            console.log({CLASS_TYPE: this.form.classType});
+            if (this.form.classType == 'none') {
+
+                this.markInputError('.class-input');
+                valid = false;
+            }
+
+
+            if (this.form.twoWay) {
+                if (!this.form.returnDate.length || this.form.returnDate == '') {
+                    this.markInputError('input.return-date');
+                    valid = false;
+                }
+                if (!this.form.returnTime.length || this.form.returnTime == '') {
+                    console.log('VVVVVVVV');
+                    this.markInputError('input.return-time');
+                    valid = false;
+                }
+
+                const returnDateTime = `${this.form.returnDate} ${this.form.returnTime}`;
+                const toDateTime = this.connection.arrivalDateTime;
+
+                console.log({
+                    real: toDateTime,
+                    have: returnDateTime
+                });
+
+
+                if (moment(returnDateTime).isSameOrBefore(toDateTime, 'minute')) {
+                    this.markInputError('input.return-date');
+                    this.markInputError('input.return-time');
+                    valid = false;
+                } else {
+                }
+                //  else {
+
+                //     if (moment(this.form.returnDate).isSame(this.connection.departureDateTime, 'day')) {
+                //         console.log("IS SAME...");
+
+                //     }
+                // }
+            }
+
+            return true;
+        },
+
+
+        markInputError(htmlElement) {
+            let element = document.querySelector(`${htmlElement}`);
+            console.log({gotElem: element});
+            if (element) {
+                element.classList.add('error-input');
+            }
+        },
+
+
+        oneTwoWayButton() {
+            console.log("clicked...");
+            this.form.twoWay = !this.form.twoWay;
+            console.log(this.form);
+
+            const button = document.querySelector('.two-way-button');
+            if (this.form.twoWay) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        }
     },
 }
 </script>
@@ -103,6 +313,59 @@ export default {
 
 * {
     font-family: 'HeaderFontRegular';
+}
+
+
+div.one-two-way {
+    /* height: 20px; */
+    height: 100%;
+    /* width: 50px; */
+    padding: 10px;
+    display: flex;
+    align-items: flex-end;
+    /* background: green; */
+}
+
+.two-way-button {
+    cursor: pointer;
+    padding: 10px 15px 10px 15px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    color: var(--on-bg-color-light);
+    margin-bottom: 6px;
+    font-size: 0.9em;
+}
+
+.two-way-button:hover {
+    border: 1px solid var(--border-color);
+    background: var(--bg-color-lighter);
+}
+
+
+.active {
+    border: 1px solid var(--border-color);
+}
+
+
+.return-connection {
+    display: flex;
+
+    /* width: fit-content !important; */
+}
+
+.return-date {
+    width: fit-content;
+    margin-right: 20px;
+}
+
+.class-type-div {
+    display: flex;
+    flex-direction: column;
+    color: var(--on-bg-color-light);
+    padding-left: 10px;
+    padding-right: 20px;
+    /* margin-right: 20px !important; */
+    /* margin-left: auto !important; */
 }
 
 
@@ -134,6 +397,7 @@ export default {
 
 
 .ticket-info-box {
+    /* transition: all linear 200ms; */
     width: 250px;
     height: 300px;
     margin-left: 20px;
@@ -162,6 +426,17 @@ export default {
     color: var(--on-bg-color-medium);
 }
 
+
+.info-price {
+    border-top: 1px solid var(--border-color);
+    margin-top: 20px;
+    padding-top: 10px;
+    /* margin-top: auto !important; */
+    /* margin-bottom: 10px !important; */
+    font-size: 1.2em;
+
+
+}
 
 .error-input, .error-input:focus {
     border: 1px solid rgb(209, 100, 100);
@@ -229,12 +504,13 @@ div.connections-body {
 
 
 div.connections-box {
+    /* transition: all linear 100ms; */
     display: flex;
     flex-direction: column;
     /* margin-top: 55px; */
     width: 40%;
     min-width: 700px;
-    max-width: 900px;
+    max-width: 800px;
     /* height: 50%; */
     height: max-content;
     padding: 8px;
@@ -362,15 +638,24 @@ button#search-button:active {
 
 
 
-input#clock-input {
+input.return-time {
     width: 100px;
 }
 
 div.secondary-row {
     justify-content: flex-start;
     margin-top: -15px;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
 }
+
+.tertiary-row {
+    justify-content: flex-start !important;
+    /* margin-top: -5px; */
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+
 
 div.filter-button {
     border-radius: 5px;

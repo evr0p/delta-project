@@ -1,8 +1,6 @@
 <template>
     <div class="no-connections-found" v-if="typeof connections === 'undefined' || !connections.length"></div>
     <div class="table-container" v-else>
-        <!-- <caption id="connection-title" v-if="typeof exactTitle == 'undefined' || !exactTitle.length">{{`${startPlace} - ${destinationPlace}`}}</caption> -->
-        <!-- <caption id="connection-title" v-else>{{`${exactTitle}`}}</caption> -->
         <h1 id="connection-title">{{exactTitle}}</h1>
         <table id="tx-table">
             <thead>
@@ -26,7 +24,6 @@
                                 <path :d="connection.typeSvgData.additional"></path>
                             </svg>
                         </div>
-                        <!-- <div class="connection-operator">{{connection.operator}}</div> -->
                     </td>
 
                     <td class="td-line"><div>{{connection.line}}</div></td>

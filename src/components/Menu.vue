@@ -8,10 +8,10 @@
         <div ref="menu-elem" class="menu-item connections active" @click="$emit('menu-selection', 'connections')">
             Verbindungen
         </div>
-        <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'contract')">
+        <div ref="menu-elem" class="menu-item history" @click="$emit('menu-selection', 'history')">
             meine Fahrten
         </div>
-        <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'Tweets')">
+        <div ref="menu-elem" class="menu-item account" @click="$emit('menu-selection', 'account')">
             Konto
         </div>
         <!-- <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'About us')">
