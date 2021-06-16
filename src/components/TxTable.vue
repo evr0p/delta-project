@@ -30,13 +30,6 @@
                   
                     <td class="departure-arrival-cell">
                         {{connection.departureTime}}
-                        <!-- <div class="departure-arrival-container">
-                            <div class="td departure-time">{{connection.departureTime}}</div>
-                            <div class="departure-dot"></div>
-                            <div class="departure-arrival-line"></div>
-                            <div class="arrival-dot"></div>
-                            <div class="td arrival-time">{{connection.arrivalTime}}</div>
-                        </div> -->
                     </td>
                     <!-- <td><div class="td arrival-time">{{connection.arrivalTime}}</div></td> -->
                     <td><div class="td duration">{{connection.duration}}</div></td>

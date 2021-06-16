@@ -1,6 +1,13 @@
 <template>
     <div class="newsfeed-container">
         <div class="connections-body">
+        <div class="error-area" v-if="errorMsgs.length">
+            <span v-for="(msg, index) in errorMsgs" :key="index" class="error-tag">
+                <span class="error-tag">{{msg}}</span>
+            </span>
+        </div>
+
+        <!-- <div class="error-area" v-if="errorMsgs.length">{{ errorMsgs.join(' -- ')}}</div> -->
             <div class="connections-box">
                 <div class="header">
                     <div class="header-title">{{ headerTitle }}</div>
@@ -14,9 +21,6 @@
                             <label for="start-input">Von</label>
                             <input id="start-input" @keypress="inputKeypress" class="place-input" v-model="form.departurePlace" lazy/>
                         </div>
-                        <!-- <div class="switch-arrow-div">
-                            <div></div>
-                        </div> -->
                         <div class="input-field right">
                             <label for="destination-input">Nach</label>
                             <input id="destination-input" @keypress="inputKeypress" class="place-input" v-model="form.destinationPlace" lazy/>
@@ -43,6 +47,9 @@
                 </div>
             </div>
             <div id="connection-table-container">
+                <div v-if="failedFindConnections" class="failed-find-connections-div">
+                    Es konnten leider keine Verbindungen gefunden werden. Bitte überprüfen Sie die Ortsangaben.
+                </div>
                 <TxTable id="connections-table"
                          @connection-selection="receivePaymentEvent"
                          :startPlace="form.departurePlace"
@@ -81,6 +88,8 @@ export default {
             news: [],
             options: [],
             exactTitle: '',
+            failedFindConnections: false,
+            errorMsgs: [],
             form: {
                 departurePlace: '',
                 destinationPlace: '',
@@ -100,6 +109,13 @@ export default {
     },
 
     methods: {
+        hasError() {
+            const err_elems = document.querySelectorAll('.error-input');
+            console.log({errElems: err_elems});
+            return err_elems && err_elems.length;
+        },
+
+
         receivePaymentEvent(connectionData) {
             console.log({CATCH_DATA: connectionData});
             this.$emit('connection-selection', connectionData);
@@ -112,14 +128,19 @@ export default {
             }
         },
 
+
+
         validateInput() {
             let valid = true;
+            this.errorMsgs = [];
             if (!this.form.departurePlace.length) {
                 this.markInputError('start-input');
+                this.errorMsgs.push(`Bitte Abfahrtsort eingeben`);
                 valid = false;
             }
-
+            
             if (!this.form.destinationPlace.length) {
+                this.errorMsgs.push(`Bitte Zielort eingeben`);
                 this.markInputError('destination-input');
                 valid = false;
             }
@@ -150,13 +171,15 @@ export default {
             this.connections = this.formatConnectionsData(data.data.connections);
 
             if (typeof this.connections !== 'undefined' && this.connections.length) {
+                this.failedFindConnections = false;
                 this.form.departurePlace = data.data.connections[0].from;
                 this.form.destinationPlace = data.data.connections[0].to;
+                this.exactTitle = data.data.description;
+            } else {
+                this.failedFindConnections = true;
             }
 
-            this.exactTitle = data.data.description;
             // this.connections.push(...this.formatConnectionsData(data.data.connections));
-            console.log({AAAAAAA: this.exactTitle});
         },
 
         formatConnectionsData(data) {
@@ -256,6 +279,7 @@ export default {
             console.log(event.target.id);
             const input = document.querySelector(`#${event.target.id}`);
             input.classList.remove('error-input');
+            this.error = this.hasError();
         },
 
 
@@ -279,6 +303,43 @@ export default {
     margin-right: 0;
     margin-left: auto;
 } */
+.error-tag {
+    background: rgb(63, 33, 33);
+    padding: 7px 5px 7px 5px;
+    border-radius: 10px;
+    font-size: 1em;
+    color: rgb(255, 75, 75);
+    margin-left: 10px;
+}
+
+.error-area {
+    /* width: 100%; */
+    position: absolute;
+    top: 60px;
+    min-width: 500px;
+    max-width: fit-content;
+    margin-top: 10px;
+    margin-bottom: 0;
+    min-height: 20px;
+    background: none;
+    /* background: rgb(63, 33, 33); */
+    /* padding: 10px; */
+    border-radius: 10px;
+    /* color: rgb(255, 75, 75); */
+    display: flex;
+    font-size: 0.9em;
+    justify-content: center;
+    align-items: center;
+}
+
+.failed-find-connections-div {
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+    font-size: 1.45em;
+    text-align: center;
+    color: var(--on-bg-color-light);
+}
 
 
 ::-webkit-calendar-picker-indicator {

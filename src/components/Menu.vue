@@ -9,18 +9,9 @@
             Verbindungen
         </div>
         <div ref="menu-elem" class="menu-item history" @click="$emit('menu-selection', 'history')">
-            meine Fahrten
+            Meine Fahrten
         </div>
-        <div ref="menu-elem" class="menu-item account" @click="$emit('menu-selection', 'account')">
-            Konto
-        </div>
-        <!-- <div ref="menu-elem" class="menu-item contract" @click="$emit('menu-selection', 'About us')">
-            About us
-        </div> -->
     </div>
-    <!-- <div class="footer">
-
-    </div> -->
   </div>
 </template>
 
@@ -30,7 +21,6 @@ export default {
     name: 'Menu',
     methods: {
         selectTab: function(menu_elem) {
-
             console.log(this.$refs);
 
             const active_elem = document.querySelector('div.menu-item.active');
@@ -63,7 +53,6 @@ export default {
 div.menu-container {
     display: flex;
     flex-direction: column;
-    /* border-right: 1px solid var(--border-color-grey); */
 }
 
 div.header {
@@ -72,7 +61,6 @@ div.header {
 
 
 div.menu-items-area {
-    /* flex-direction: column; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -92,7 +80,6 @@ div.menu-item {
 div.menu-item:hover {
     border-bottom: 1.5px solid var(--secondary-color);
     color: var(--on-bg-color-light);
-    /* background: var(--primary-color-very-dim); */
     cursor: pointer;
 }
 
@@ -101,20 +88,9 @@ div.menu-item.active {
     color: var(--primary-color-light);
     color: white;
     font-weight: bold;
-    /* color: var(--secondary-color-light); */
-    /* border-bottom: 1px solid var(--primary-color); */
     border-bottom: 1.5px solid var(--secondary-color-light);
     transition: all linear 0.2;
 }
-
-
-/* 
-div.footer {
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-} */
 
 
 </style>

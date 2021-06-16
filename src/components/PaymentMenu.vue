@@ -1,5 +1,10 @@
 <template>
-<div id="payment-view" class="container">
+<div id="payment-view" class="container menu-element">
+    <div class="error-area" v-if="errorMsgs.length">
+        <span v-for="(msg, index) in errorMsgs" :key="index" class="error-tag">
+            <span class="error-tag">{{msg}}</span>
+        </span>
+    </div>
     <div class="connections-box">
         <div class="header">
             <div class="header-title">{{ headerTitle }}</div>
@@ -21,26 +26,21 @@
             <div class="input-area secondary-row">
                 <div class="input-field">
                     <label for="birthday-date">Geburtsdatum</label>
-                    <input id="birthday-date" type="date" class="place-input" v-model="form.birthday" @click="inputKeypress"/>
+                    <input id="birthday-date" type="date" class="place-input"
+                           v-model="form.birthday"
+                           @click="inputKeypress"
+                           @keypress="renderBirthday(); calculateTicketPrice()"
+                           @change="renderBirthday(); calculateTicketPrice()"/>
                 </div>
                 <div class=" input-field clock-input">
                     <label for="discount-type">Ermässigungen</label>
                     <select id="discount-type" class="place-input" v-model="form.discountOption" @change="calculateTicketPrice">
                         <option value="none" selected>Keine Ermässigungen</option>
                         <option value="halbtax">Halbtax</option>
-                        <!-- <option value="second_class">2. Klasse</option> -->
-
-                        <!-- <option v-for="(option, index) in discountOptions"
-                            :key="index"
-                            :selected="index == 0"
-                            :value="option.value">
-                            {{option.name}}
-                        </option> -->
                     </select>
                 </div>
             </div>
             <div class="input-area tertiary-row">
-                <!-- <div class="button class-button"></div> -->
                 <div class="class-type-div">
                     <label for="discount-type">Reiseoption</label>
                     <select class="class-input" @click="inputKeypress" v-model="form.classType" @change="calculateTicketPrice">
@@ -51,8 +51,12 @@
                 </div>
 
                 <div class="one-two-way" @click="oneTwoWayButton(); calculateTicketPrice()">
-                    <div v-if="!form.twoWay" class="two-way-button">{{buttonTwoWayText[0]}}</div>
-                    <div v-else class="two-way-button">{{buttonTwoWayText[1]}}</div>
+                    <div v-if="!form.twoWay" class="two-way-button">
+                        <span style="white-space: nowrap">{{buttonTwoWayText[0]}}</span>
+                    </div>
+                    <div v-else class="two-way-button">
+                        <span style="white-space: nowrap">{{buttonTwoWayText[1]}}</span>
+                    </div>
                 </div>
 
                 <div v-if="form.twoWay" class="return-connection">
@@ -65,19 +69,21 @@
                         <input type="time" id="return-time" class="return-time place-input" v-model="form.returnTime" required @keypress="inputKeypress" @click="inputKeypress"/>
                     </div>
                 </div>
-                <!-- </div> -->
-                <!-- <div class="class-button"></div> -->
             </div>
         </div>
         <div class="search-button-area" @click="goToPayment">
-            <button class="search-button">Zur Kasse</button>
+            <button v-tooltip="'fck'" class="search-button">Zur Kasse</button>
         </div>
     </div>
     <div class="ticket-info-box">
         <div class="info-title">{{connection.from}} - {{connection.to}}</div>
         <div class="info-route">{{connection.description}}</div>
-        <!-- <div class="return-route" v-if="form.twoWay">Rückfahrt am {{returnDateTime}}</div> -->
-        <div class="info-hops">Umsteigen {{connection.hops}}</div>
+        <div class="info-route-label">Abfahrt</div>
+        <div class="info-route-arrival">{{connection.departureDateTime}}, Gleis {{connection.track}}</div>
+        <div class="info-route-arrival-label">Ankunft</div>
+        <div class="info-route-arrival">{{connection.arrivalDateTime}}</div>
+        <div class="info-birthday">{{ form.isChild ? 'Kinder' : 'Erwachsene'}}</div>
+        <div class="info-hops" v-if="connection.hops">{{connection.hops}}x umsteigen</div>
         <div class="info-discount" v-if="form.discountOption != 'none'">{{discountOptions[1].name}}</div>
         <div class="info-class" v-if="form.classType != 'none'">{{classOptionNames[form.classType]}}</div>
         <div class="info-price">{{calcTicketPrice}} CHF</div>
@@ -111,6 +117,7 @@ export default {
             news: [],
             options: [],
             exactTitle: '',
+            errorMsgs: [],
             form: {
                 name: '',
                 surname: '',
@@ -119,7 +126,8 @@ export default {
                 twoWay: false,
                 returnTime: '',
                 returnDate: '',
-                classType: 'none'
+                classType: 'none',
+                isChild: false
             },
 
             returnDateTime: '',
@@ -155,6 +163,14 @@ export default {
 
     methods: {
 
+        renderBirthday() {
+            const now = moment(new Date(), 'YYYY-MM-DD');
+            const birthday = moment(this.form.birthday, 'YYYY-MM-DD');
+            const diff = now.diff(birthday, 'years');
+            this.form.isChild = diff <= 16;
+        },
+
+
         async goToPayment(input) {
             console.log({formData: this.form});
             if (this.validateInput()) {
@@ -167,14 +183,15 @@ export default {
         calculateTicketPrice() {
             let price = this.ticketPrice;
 
-            if (this.form.classType == 'first_class') {
-                console.log("FIRST CLASSSSSSSSSSSSSSS");
-                price += 15.5;
+
+            if (this.form.discountOption == 'halbtax' || this.form.isChild) {
+                console.log("halbtax or child...");
+                price /= 2;
             }
 
-            if (this.form.discountOption == 'halbtax') {
-                console.log('less EXPENSIVE');
-                price -= this.ticketPrice / 2;
+
+            if (this.form.classType == 'first_class') {
+                price += 15.5;
             }
 
             if (this.form.twoWay) {
@@ -206,9 +223,6 @@ export default {
                 time.classList.remove('error-input');
                 date.classList.remove('error-input');
             }
-            // con
-            // const input = document.querySelector(`#${event.target.id}`);
-            // input.classList.remove('error-input');
 
             event.target.classList.remove('error-input');
         },
@@ -216,21 +230,26 @@ export default {
 
         validateInput() {
             let valid = true;
+            this.errorMsgs = [];
             if (!this.form.name.length) {
                 this.markInputError('#name');
+                this.errorMsgs.push('Vornamen angeben');
                 valid = false;
             }
-
             if (!this.form.surname.length) {
+                this.errorMsgs.push('Nachnamen angeben');
                 this.markInputError('#surname');
                 valid = false;
             }
 
             if (!this.form.birthday.length || this.form.birthday == '') {
                 this.markInputError('#birthday-date');
+                this.errorMsgs.push('Geburtsdatum angeben');
                 valid = false;
             } else {
-                if (moment(this.form.birthday).isAfter('2020-01-01', 'day')) {
+                if (moment(this.form.birthday).isAfter('2020-01-01', 'day')
+                    || moment(this.form.birthday).isBefore('1900-01-01', 'day')) {
+                    this.errorMsgs.push('Gültiges Geburtsdatum angeben');
                     this.markInputError('#birthday-date');
                     valid = false;                    
                 }
@@ -238,19 +257,18 @@ export default {
 
             console.log({CLASS_TYPE: this.form.classType});
             if (this.form.classType == 'none') {
-
+                 this.errorMsgs.push('Reiseklasse angeben');
                 this.markInputError('.class-input');
                 valid = false;
             }
 
-
             if (this.form.twoWay) {
                 if (!this.form.returnDate.length || this.form.returnDate == '') {
+                    this.errorMsgs.push('Rückfahrdatum angeben');
                     this.markInputError('input.return-date');
                     valid = false;
                 }
                 if (!this.form.returnTime.length || this.form.returnTime == '') {
-                    console.log('VVVVVVVV');
                     this.markInputError('input.return-time');
                     valid = false;
                 }
@@ -267,18 +285,12 @@ export default {
                 if (moment(returnDateTime).isSameOrBefore(toDateTime, 'minute')) {
                     this.markInputError('input.return-date');
                     this.markInputError('input.return-time');
+                    this.errorMsgs.push('Rückfahrdatum muss nach der Ankunftszeit liegen');
                     valid = false;
-                } else {
                 }
-                //  else {
-
-                //     if (moment(this.form.returnDate).isSame(this.connection.departureDateTime, 'day')) {
-                //         console.log("IS SAME...");
-
-                //     }
-                // }
             }
 
+            // this.errorMsgs = [...new Set(this.errorMsgs)];
             return true;
         },
 
@@ -314,6 +326,45 @@ export default {
 * {
     font-family: 'HeaderFontRegular';
 }
+.error-tag {
+    background: rgb(63, 33, 33);
+    padding: 7px 5px 7px 5px;
+    border-radius: 10px;
+    font-size: 1em;
+    color: rgb(255, 75, 75);
+    margin-left: 10px;
+}
+
+.error-area {
+    /* width: 100%; */
+    position: absolute;
+    top: 60px;
+    min-width: 500px;
+    max-width: fit-content;
+    margin-top: 10px;
+    margin-bottom: 0;
+    min-height: 20px;
+    background: none;
+    /* background: rgb(63, 33, 33); */
+    /* padding: 10px; */
+    border-radius: 10px;
+    /* color: rgb(255, 75, 75); */
+    display: flex;
+    font-size: 0.9em;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.info-route-label {
+    margin-top: 10px;
+    color: var(--on-bg-color-medium);
+}
+
+.info-route-arrival-label {
+    margin-top: 10px;
+    color: var(--on-bg-color-medium);
+}
 
 
 div.one-two-way {
@@ -328,7 +379,7 @@ div.one-two-way {
 
 .two-way-button {
     cursor: pointer;
-    padding: 10px 15px 10px 15px;
+    padding: 10px 15px 10px 10px;
     border-radius: 5px;
     border: 1px solid transparent;
     color: var(--on-bg-color-light);
@@ -363,7 +414,7 @@ div.one-two-way {
     flex-direction: column;
     color: var(--on-bg-color-light);
     padding-left: 10px;
-    padding-right: 20px;
+    padding-right: 10px;
     /* margin-right: 20px !important; */
     /* margin-left: auto !important; */
 }
@@ -399,15 +450,15 @@ div.one-two-way {
 .ticket-info-box {
     /* transition: all linear 200ms; */
     width: 250px;
-    height: 300px;
+    min-height: 300px;
     margin-left: 20px;
+    max-height: 400px;
     border-radius: 16px;
     padding: 12px;
     border: 1px solid var(--bg-color);
     color: var(--on-bg-color-light);
-        background: rgb(25, 27, 31);
+    background: rgb(25, 27, 31);
     box-shadow: rgb(0 0 0 / 1%) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px, rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px;
-
 }
 
 .info-title {
@@ -416,8 +467,8 @@ div.one-two-way {
     /* font-family: 'HeaderFontBold'; */
 }
 
-.info-route {
-    color: var(--on-bg-color-medium);
+.info-route-departure, .info-route-arrival {
+    /* color: var(--on-bg-color-medium); */
 }
 
 .info-hops {
@@ -617,7 +668,7 @@ button.search-button {
     border: none;
     font-size: 1.1em;
     box-shadow: none;
-    height: 45px;
+    height: 55px;
     border-radius: 16px;
     width: 100%;
     cursor: pointer;

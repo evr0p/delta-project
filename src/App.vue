@@ -24,8 +24,8 @@
 import Header from './components/Header';
 import Menu from './components/Menu';
 import Connections from './components/Connections';
-import ContractArea from './components/ContractArea';
-import Footer from './components/Footer';
+// import ContractArea from './components/ContractArea';
+// import Footer from './components/Footer';
 import PaymentMenu from './components/PaymentMenu';
 
 
@@ -35,8 +35,8 @@ export default {
     Header,
     Menu,
     Connections,
-    ContractArea,
-    Footer,
+    // ContractArea,
+    // Footer,
     PaymentMenu
   },
 
@@ -89,8 +89,6 @@ export default {
 
 <style>
 @import url('./css/fonts.css');
-
-
 
 
 #background-radial-gradient {
